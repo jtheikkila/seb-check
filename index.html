@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SEB Check Page</title>
+</head>
+<body>
+  <h1>Welcome to the Exam</h1>
+  <p id="message">Checking if Safe Exam Browser is active...</p>
+
+  <script>
+    if (typeof SEB === 'undefined') {
+      document.getElementById('message').innerText = 
+        "❌ SEB not detected. Please open this page using Safe Exam Browser.";
+    } else {
+      document.getElementById('message').innerText = 
+        "✅ Safe Exam Browser detected. You may begin.";
+    }
+  </script>
+</body>
+</html>
