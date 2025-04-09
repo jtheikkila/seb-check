@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Safe Exam Browser Detection</title>
+  <title>SEB Detection Page</title>
   <meta charset="UTF-8">
 </head>
 <body>
-  <h1>SEB Detection Page</h1>
-  <p id="status">Checking SEB status...</p>
+  <h1>SEB Detection</h1>
+  <p id="output">Checking for SEB...</p>
 
   <script>
-    window.addEventListener("load", function () {
-      if (typeof SEB !== 'undefined' && SEB.getVersion) {
-        // This means SEB API is active
-        document.getElementById("status").innerText =
-          "✅ Safe Exam Browser detected! Version: " + SEB.getVersion();
+    window.addEventListener("load", () => {
+      const output = document.getElementById("output");
+      if (typeof seb !== "undefined" && seb.getSebVersion) {
+        const version = seb.getSebVersion();
+        const os = seb.getOperatingSystem();
+        const configKey = seb.getConfigKeyHash();
+        output.innerText = `✅ SEB detected: Version ${version}, OS: ${os}, Config Key: ${configKey}`;
       } else {
-        document.getElementById("status").innerText =
-          "❌ SEB not detected. Please use Safe Exam Browser.";
+        output.innerText = "❌ SEB NOT detected. Please launch this page from within Safe Exam Browser.";
       }
     });
   </script>
