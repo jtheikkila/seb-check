@@ -2,45 +2,49 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>SEB Detection and Parameters</title>
+  <title>Browser Environment Inspector</title>
+  <style>
+    body { font-family: monospace; white-space: pre; background: #f9f9f9; padding: 20px; }
+    .seb-section { margin-top: 2em; color: #005; }
+    .warning { color: red; font-weight: bold; }
+  </style>
 </head>
 <body>
-  <h1>Safe Exam Browser Check</h1>
-  <div id="seb-info">Checking SEB status...</div>
+  <h1>Browser Environment Inspector</h1>
+  <div id="output">Gathering environment info...</div>
 
   <script>
-    function printInfo(label, value) {
-      const info = document.createElement("p");
-      info.innerHTML = `<strong>${label}:</strong> ${value}`;
-      document.getElementById("seb-info").appendChild(info);
+    function dumpObject(obj, name) {
+      let output = `\n=== ${name} ===\n`;
+      const keys = Object.getOwnPropertyNames(obj);
+      keys.forEach(key => {
+        try {
+          const val = obj[key];
+          output += `${key}: ${typeof val === "function" ? "[Function]" : JSON.stringify(val)}\n`;
+        } catch (e) {
+          output += `${key}: [inaccessible: ${e.message}]\n`;
+        }
+      });
+      return output;
     }
 
-    window.addEventListener("load", () => {
-      const infoContainer = document.getElementById("seb-info");
-      infoContainer.innerHTML = ""; // Clear "Checking..." message
+    function runDump() {
+      let output = '';
 
+      // Dump global properties
+      output += dumpObject(window, "Global Window Object");
+
+      // Check for SEB
       if (typeof seb !== "undefined") {
-        try {
-          const version = seb.getSebVersion ? seb.getSebVersion() : "Unavailable";
-          const os = seb.getOperatingSystem ? seb.getOperatingSystem() : "Unavailable";
-          const platform = seb.getPlatform ? seb.getPlatform() : "Unavailable";
-          const configKey = seb.getConfigKeyHash ? seb.getConfigKeyHash() : "Unavailable";
-          const examKey = seb.getExamKey ? seb.getExamKey() : "Unavailable";
-
-          printInfo("✅ SEB Detected", "Yes");
-          printInfo("SEB Version", version);
-          printInfo("Operating System", os);
-          printInfo("Platform", platform);
-          printInfo("Config Key Hash", configKey);
-          printInfo("Exam Key", examKey);
-        } catch (e) {
-          printInfo("❌ Error reading SEB values", e.message);
-        }
+        output += dumpObject(seb, "SEB Object");
       } else {
-        printInfo("❌ SEB Detected", "No");
-        printInfo("Instructions", "Please open this page using Safe Exam Browser.");
+        output += `\n=== SEB Object ===\nseb is undefined (not available in this browser)\n`;
       }
-    });
+
+      document.getElementById("output").innerText = output;
+    }
+
+    window.addEventListener("load", runDump);
   </script>
 </body>
 </html>
