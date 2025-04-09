@@ -1,23 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>SEB Detection Page</title>
   <meta charset="UTF-8">
+  <title>SEB Detection and Parameters</title>
 </head>
 <body>
-  <h1>SEB Detection</h1>
-  <p id="output">Checking for SEB...</p>
+  <h1>Safe Exam Browser Check</h1>
+  <div id="seb-info">Checking SEB status...</div>
 
   <script>
+    function printInfo(label, value) {
+      const info = document.createElement("p");
+      info.innerHTML = `<strong>${label}:</strong> ${value}`;
+      document.getElementById("seb-info").appendChild(info);
+    }
+
     window.addEventListener("load", () => {
-      const output = document.getElementById("output");
-      if (typeof seb !== "undefined" && seb.getSebVersion) {
-        const version = seb.getSebVersion();
-        const os = seb.getOperatingSystem();
-        const configKey = seb.getConfigKeyHash();
-        output.innerText = `✅ SEB detected: Version ${version}, OS: ${os}, Config Key: ${configKey}`;
+      const infoContainer = document.getElementById("seb-info");
+      infoContainer.innerHTML = ""; // Clear "Checking..." message
+
+      if (typeof seb !== "undefined") {
+        try {
+          const version = seb.getSebVersion ? seb.getSebVersion() : "Unavailable";
+          const os = seb.getOperatingSystem ? seb.getOperatingSystem() : "Unavailable";
+          const platform = seb.getPlatform ? seb.getPlatform() : "Unavailable";
+          const configKey = seb.getConfigKeyHash ? seb.getConfigKeyHash() : "Unavailable";
+          const examKey = seb.getExamKey ? seb.getExamKey() : "Unavailable";
+
+          printInfo("✅ SEB Detected", "Yes");
+          printInfo("SEB Version", version);
+          printInfo("Operating System", os);
+          printInfo("Platform", platform);
+          printInfo("Config Key Hash", configKey);
+          printInfo("Exam Key", examKey);
+        } catch (e) {
+          printInfo("❌ Error reading SEB values", e.message);
+        }
       } else {
-        output.innerText = "❌ SEB NOT detected. Please launch this page from within Safe Exam Browser.";
+        printInfo("❌ SEB Detected", "No");
+        printInfo("Instructions", "Please open this page using Safe Exam Browser.");
       }
     });
   </script>
